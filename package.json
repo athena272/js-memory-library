@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "json-server --watch backend/db.json --port 3000"
   },
   "keywords": [],
   "author": "",
@@ -14,5 +15,8 @@
     "@eslint/js": "^9.39.2",
     "eslint": "^9.39.2",
     "globals": "^17.0.0"
+  },
+  "dependencies": {
+    "json-server": "1.0.0-beta.3"
   }
 }
