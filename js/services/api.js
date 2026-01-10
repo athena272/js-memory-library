@@ -1,6 +1,6 @@
 
 const isLocalhost = (location.hostname === 'localhost' || location.hostname === "127.0.0.1");
-const DEFAULT_BASE_URL =  isLocalhost ? "http://localhost:3000" : "https://athena272.github.io/js-memory-library/backend/db.json";
+const DEFAULT_BASE_URL = isLocalhost ? "http://localhost:3000" : "https://athena272.github.io/js-memory-library/backend/db.json";
 
 export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
 {
@@ -24,7 +24,9 @@ export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
                 throw new Error(`HTTP ${response.status} ${response.statusText} ${text}`.trim());
             }
 
-            return await response.json();
+            let value = await response.json();
+            if (!isLocalhost) value = value.thoughts;
+            return value;
         } catch (error)
         {
             console.log("🚀 ~ request ~ error:", error);
