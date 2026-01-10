@@ -1,3 +1,4 @@
+console.log("🚀 ~ location.hostname:", location.hostname);
 const DEFAULT_BASE_URL = location.hostname === 'localhost' ?
     "http://localhost:3000" : "https://athena272.github.io/js-memory-library/backend/db.json";
 
