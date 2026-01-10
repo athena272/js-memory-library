@@ -2,53 +2,100 @@ const DEFAULT_BASE_URL = "http://localhost:3000";
 
 export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
 {
-    async function request(path, { method = 'GET', body } = {})
+    const axiosInstance = globalThis.axios?.create({
+        baseURL: baseUrl,
+        timeout: 5 * 1000,
+        headers: { "Content-Type": "application/json" },
+    });
+
+    if (!axiosInstance)
     {
-        try
+        throw new Error("Axios não foi carregado. Verifique se o script CDN vem antes do main.js.");
+    }
+
+    // Axios separa erro de rede x erro HTTP
+    function normalizeError(error)
+    {
+        if (error.response)
         {
-            const response = await fetch(`${baseUrl}${path}`, {
-                method,
-                headers: body ? { "Content-Type": "application/json" } : undefined,
-                body: body ? JSON.stringify(body) : undefined,
-            });
-
-            // json-server retorna 204 no delete; não tente json() nesse caso
-            if (response.status === 204) return null;
-
-            if (!response.ok)
-            {
-                const text = await response.text().catch(() => "");
-                throw new Error(`HTTP ${response.status} ${response.statusText} ${text}`.trim());
-            }
-
-            return await response.json();
-        } catch (error)
-        {
-            console.log("🚀 ~ request ~ error:", error);
-            throw error;
+            const { status, statusText, data } = error.response;
+            const msg =
+                typeof data === "string"
+                    ? data
+                    : data?.message
+                        ? data.message
+                        : JSON.stringify(data ?? {});
+            return new Error(`HTTP ${status} ${statusText} ${msg}`.trim());
         }
+
+        if (error.request)
+        {
+            return new Error("Erro de rede: sem resposta do servidor.");
+        }
+
+        return error instanceof Error ? error : new Error(String(error));
     }
 
     return {
-        index()
+        async index()
         {
-            return request('/thoughts');
+            try
+            {
+                const { data } = await axiosInstance.get('/thoughts');
+                return data;
+            } catch (error)
+            {
+                throw normalizeError(error);
+            }
         },
-        show(id)
+        async show(id)
         {
-            return request(`/thoughts/${id}`);
+            try
+            {
+                const { data } = await axiosInstance.get(`/thoughts/${id}`);
+                return data;
+            } catch (error)
+            {
+                throw normalizeError(error);
+            }
         },
-        store({ content, author })
+        async store({ content, author })
         {
-            return request('/thoughts', { method: 'POST', body: { content, author } });
+            try
+            {
+                const { data } = await axiosInstance.post('/thoughts', { content, author });
+                return data;
+            } catch (error)
+            {
+                throw normalizeError(error);
+            }
         },
-        update({ id, content, author })
+        async update({ id, content, author })
         {
-            return request(`/thoughts/${id}`, { method: 'PUT', body: { id, content, author } });
+            try
+            {
+                const { data } = await axiosInstance.put(`/thoughts/${id}`, {
+                    id,
+                    content,
+                    author,
+                });
+                return data;
+            } catch (error)
+            {
+                throw normalizeError(error);
+            }
         },
-        delete(id)
+
+        async delete(id)
         {
-            return request(`/thoughts/${id}`, { method: 'DELETE' });
-        }
+            try
+            {
+                await axiosInstance.delete(`/thoughts/${id}`);
+                return null;
+            } catch (error)
+            {
+                throw normalizeError(error);
+            }
+        },
     };
 }
