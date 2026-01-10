@@ -4,7 +4,7 @@ import { createFormController } from "./ui/formController.js";
 
 document.addEventListener("DOMContentLoaded", () =>
 {
-    const api = createApi();
+    const api = createApi({ baseUrl: 'http://localhost:3000' });
 
     const listEl = document.getElementById("lista-pensamentos");
     const formEl = document.getElementById("pensamento-form");
