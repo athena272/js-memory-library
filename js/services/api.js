@@ -1,11 +1,12 @@
-console.log("🚀 ~ location.hostname:", location.hostname);
-const DEFAULT_BASE_URL = location.hostname === 'localhost' ?
-    "http://localhost:3000" : "https://athena272.github.io/js-memory-library/backend/db.json";
+
+const isLocalhost = (location.hostname === 'localhost' || location.hostname === "127.0.0.1");
+const DEFAULT_BASE_URL =  isLocalhost ? "http://localhost:3000" : "https://athena272.github.io/js-memory-library/backend/db.json";
 
 export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
 {
     async function request(path, { method = 'GET', body } = {})
     {
+        if (!isLocalhost) path = null;
         try
         {
             const response = await fetch(`${baseUrl}${path}`, {
