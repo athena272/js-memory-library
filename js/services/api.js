@@ -6,7 +6,7 @@ export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
 {
     async function request(path, { method = 'GET', body } = {})
     {
-        if (!isLocalhost) path = null;
+        if (!isLocalhost) path = '';
         try
         {
             const response = await fetch(`${baseUrl}${path}`, {
