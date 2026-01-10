@@ -1,60 +1,122 @@
 ![Thumbnail](./thumb.png)
 
-# Memoteca
+# Memoteca (js-memory-library)
 
-Memoteca é um aplicativo organizador de pensamentos e frases que permite cadastrar, listar, editar e deletar pensamentos, incluindo informações como conteúdo e autoria.
+Aplicação para organizar frases/pensamentos com **CRUD completo** (criar, listar, editar e excluir), usando um **backend fake com JSON Server**.
 
-## 🔨 Funcionalidades do projeto
+> **Modelo de dados atual**
+>
+> - **thoughts**
+>   - `id` (string)
+>   - `content` (string)
+>   - `author` (string)
 
-`Cadastro de pensamentos`: Permite adicionar novos pensamentos à lista, inserindo informações como conteúdo e autoria.
+---
 
-`Listagem de pensamentos`: Exibe os pensamentos cadastrados, permitindo visualizar o texto e a autoria.
+## 🔨 Funcionalidades
 
-`Edição de pensamentos`: Permite editar pensamentos existentes, atualizando as informações conforme necessário.
+- **Cadastro de pensamentos** (content + author)
+- **Listagem de pensamentos** (mural)
+- **Edição** de pensamentos existentes
+- **Exclusão** de pensamentos com confirmação
+- **Arquitetura modular** no frontend (API service, view e controller)
 
-`Exclusão de pensamentos`: Permite remover pensamentos da lista.
+---
 
-## ✔️ Técnicas e tecnologias utilizadas
+## 🧱 Estrutura do projeto
 
-`JavaScript`: Linguagem de programação utilizada para desenvolver a lógica do aplicativo.
+```text
+js-memory-library/
+  backend/
+    db.json
+  css/
+    styles.css
+  js/
+    main.js
+    services/
+      api.js
+    ui/
+      formController.js
+      thoughtsView.js
+  assets/
+    images/
+      ...
+  index.html
+  thumb.png
+  README.md
+```
 
-`Fetch API`: Utilizada para realizar requisições HTTP para comunicação com o servidor.
+---
 
-`Axios`: Biblioteca usada para facilitar e simplificar as requisições HTTP.
+## ✔️ Técnicas e tecnologias
 
-`Node.js`: Plataforma utilizada para executar o ambiente de desenvolvimento.
+- **JavaScript (ES Modules)**: organização do código em módulos
+- **Fetch API**: requisições HTTP para o backend fake
+- **JSON Server**: simula uma API REST com persistência em `db.json`
+- **CSS**: estilos do layout
 
-`JSON Server`: Utilizado para simular um backend e facilitar o desenvolvimento e teste das operações CRUD.
+> Observação: o `index.html` carrega o **Axios via CDN**, mas o projeto atualmente usa **Fetch** no service `api.js`.  
+> Se quiser, você pode remover o script do Axios para enxugar dependências.
 
-`CSS`: Utilizado para estilização da interface do aplicativo.
+---
 
+## 🛠️ Como rodar o projeto localmente
 
-## 📁 Link do Figma
+### 1) Requisitos
+- **Node.js** (recomendado: 18+)
+- **JSON Server**
 
-Você pode [acessar o figma do projeto aqui](https://www.figma.com/design/Sz1gmmemxqcB3amInL4Ndp/Rebrand-Memoteca-%7C-Curso-CRUD?node-id=148-26&t=FpdmfbiM1i1s6REQ-0).
+### 2) Subir o backend (JSON Server)
 
-## 🛠️ Abrir e rodar o projeto
-
-Para executar a API fake, você vai precisar do NodeJS; a versão utilizada foi a 20.12.2.
-
-Instale o JSON Server globalmente (se ainda não estiver instalado):
+Você pode instalar o JSON Server globalmente:
 
 ```bash
 npm install -g json-server
 ```
 
-Para executar, abra um novo terminal e, dentro da pasta backend, execute:
+Depois, dentro da pasta `backend`, execute:
 
 ```bash
-npm start
+json-server --watch db.json --port 3000
 ```
 
-Acesse o backend localmente em seu navegador:
+A API ficará disponível em:
 
-http://localhost:3000
+- http://localhost:3000
 
-Para executar o frontend, abra o projeto no Visual Studio Code. Com a extensão Live Server instalada, clique com o botão direito no arquivo index.html e selecione "Open with Live Server" no menu de contexto.
+E o recurso principal em:
 
-Acesse o frontend localmente em seu navegador:
+- http://localhost:3000/thoughts
 
-http://localhost:5500
+### 3) Subir o frontend
+
+Abra o projeto no VS Code e use a extensão **Live Server** para abrir o `index.html`.
+
+---
+
+## 🔌 Endpoints usados pelo app
+
+Base URL (local): `http://localhost:3000`
+
+- `GET /thoughts` → lista pensamentos
+- `GET /thoughts/:id` → detalhe
+- `POST /thoughts` → cria
+- `PUT /thoughts/:id` → atualiza
+- `DELETE /thoughts/:id` → remove
+
+---
+
+## 🌐 Sobre GitHub Pages
+
+O GitHub Pages **não** executa o JSON Server (é hosting estático).  
+Então, para ter CRUD funcionando em produção você precisa de uma API real (Render, Railway, Fly.io, etc).
+
+No seu `js/services/api.js` existe um `DEFAULT_BASE_URL` que tenta apontar para um arquivo `db.json` no GitHub Pages.  
+⚠️ Isso é **somente leitura** (não dá para fazer `POST/PUT/DELETE` num arquivo estático). Para produção, substitua o `baseUrl` por uma API hospedada.
+
+---
+
+## 📁 Link do Figma
+
+Você pode acessar o Figma do projeto aqui:
+https://www.figma.com/design/Sz1gmmemxqcB3amInL4Ndp/Rebrand-Memoteca-%7C-Curso-CRUD?node-id=148-26&t=FpdmfbiM1i1s6REQ-0
