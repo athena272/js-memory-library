@@ -1,122 +1,147 @@
-![Thumbnail](./thumb.png)
+# 🧠 JS Memory Library
 
-# Memoteca (js-memory-library)
+Aplicação **CRUD de pensamentos** desenvolvida em JavaScript puro, com foco em **arquitetura modular**, **boas práticas de Front-end** e evolução incremental usando **ES6+**.
 
-Aplicação para organizar frases/pensamentos com **CRUD completo** (criar, listar, editar e excluir), usando um **backend fake com JSON Server**.
-
-> **Modelo de dados atual**
->
-> - **thoughts**
->   - `id` (string)
->   - `content` (string)
->   - `author` (string)
+O projeto permite cadastrar, editar, excluir, favoritar e buscar pensamentos (frases, ideias, citações), além de trabalhar com **datas**, **validações** e **estado visual da aplicação**.
 
 ---
 
-## 🔨 Funcionalidades
+## ✨ Funcionalidades
 
-- **Cadastro de pensamentos** (content + author)
-- **Listagem de pensamentos** (mural)
-- **Edição** de pensamentos existentes
-- **Exclusão** de pensamentos com confirmação
-- **Arquitetura modular** no frontend (API service, view e controller)
+- ➕ Criar pensamentos (conteúdo, autoria e data)
+- ✏️ Editar pensamentos existentes
+- 🗑️ Remover pensamentos
+- ⭐ Favoritar / desfavoritar pensamentos
+- 🔍 Buscar por conteúdo ou autoria
+- 📅 Exibição de data formatada (pt-BR)
+- 🧠 Prevenção de pensamentos duplicados
+- ⚠️ Validações com Regex
+- 🪶 Tratamento de dados legados (pensamentos sem data)
+- 🖼️ Estado visual para lista vazia
 
 ---
 
-## 🧱 Estrutura do projeto
+## 🧱 Arquitetura do Projeto
+
+O projeto segue o princípio de **separação de responsabilidades**, inspirado em MVC (sem framework).
+
+### 📂 Estrutura de pastas
 
 ```text
 js-memory-library/
-  backend/
-    db.json
-  css/
-    styles.css
-  js/
-    main.js
-    services/
-      api.js
-    ui/
-      formController.js
-      thoughtsView.js
-  assets/
-    images/
-      ...
-  index.html
-  thumb.png
-  README.md
+├── assets/
+│   └── images/          # Imagens do projeto
+├── backend/
+│   └── db.json          # Banco de dados (json-server)
+├── css/
+│   └── styles.css       # Estilos globais
+├── js/
+│   ├── main.js          # Orquestração da aplicação
+│   ├── services/
+│   │   └── api.js       # Comunicação com a API
+│   └── ui/
+│       ├── formController.js  # Controle do formulário
+│       └── thoughtsView.js    # Renderização da lista
+├── index.html
+└── README.md
 ```
 
 ---
 
-## ✔️ Técnicas e tecnologias
+## 🔄 Fluxo da aplicação
 
-- **JavaScript (ES Modules)**: organização do código em módulos
-- **Fetch API**: requisições HTTP para o backend fake
-- **JSON Server**: simula uma API REST com persistência em `db.json`
-- **CSS**: estilos do layout
+1. **index.html**
+   - Estrutura da página
+   - Importa o JavaScript principal
 
-> Observação: o `index.html` carrega o **Axios via CDN**, mas o projeto atualmente usa **Fetch** no service `api.js`.  
-> Se quiser, você pode remover o script do Axios para enxugar dependências.
+2. **main.js**
+   - Inicializa a aplicação
+   - Conecta View, Form e API
+   - Controla fluxo e regras de negócio
+
+3. **formController.js**
+   - Coleta dados do formulário
+   - Executa validações (regex, data futura)
+   - Controla modos de criação e edição
+
+4. **thoughtsView.js**
+   - Renderiza os pensamentos
+   - Formata datas
+   - Controla estado visual (lista vazia)
+   - Usa *event delegation* para ações
+
+5. **api.js**
+   - Comunicação HTTP com backend
+   - CRUD completo
+   - Normalização e validação defensiva
 
 ---
 
-## 🛠️ Como rodar o projeto localmente
+## 🧪 Validações aplicadas
 
-### 1) Requisitos
-- **Node.js** (recomendado: 18+)
-- **JSON Server**
+- **Conteúdo**
+  - Apenas letras e espaços
+  - Mínimo de 10 caracteres
 
-### 2) Subir o backend (JSON Server)
+- **Autoria**
+  - Apenas letras
+  - Entre 3 e 15 caracteres
 
-Você pode instalar o JSON Server globalmente:
+- **Data**
+  - Não permite datas futuras
+  - Tratamento para dados antigos sem data
+
+---
+
+## 🚀 Como executar o projeto
+
+### 1️⃣ Instalar o backend (json-server)
 
 ```bash
 npm install -g json-server
 ```
 
-Depois, dentro da pasta `backend`, execute:
+### 2️⃣ Subir o servidor
 
 ```bash
-json-server --watch db.json --port 3000
+json-server --watch backend/db.json --port 3000
 ```
 
-A API ficará disponível em:
+### 3️⃣ Executar o Front-end
 
-- http://localhost:3000
+Use uma extensão como **Live Server** ou sirva os arquivos via servidor local:
 
-E o recurso principal em:
+```bash
+npx serve .
+```
 
-- http://localhost:3000/thoughts
-
-### 3) Subir o frontend
-
-Abra o projeto no VS Code e use a extensão **Live Server** para abrir o `index.html`.
-
----
-
-## 🔌 Endpoints usados pelo app
-
-Base URL (local): `http://localhost:3000`
-
-- `GET /thoughts` → lista pensamentos
-- `GET /thoughts/:id` → detalhe
-- `POST /thoughts` → cria
-- `PUT /thoughts/:id` → atualiza
-- `DELETE /thoughts/:id` → remove
+Acesse:
+```
+http://localhost:5500
+```
 
 ---
 
-## 🌐 Sobre GitHub Pages
+## 🛠️ Tecnologias utilizadas
 
-O GitHub Pages **não** executa o JSON Server (é hosting estático).  
-Então, para ter CRUD funcionando em produção você precisa de uma API real (Render, Railway, Fly.io, etc).
-
-No seu `js/services/api.js` existe um `DEFAULT_BASE_URL` que tenta apontar para um arquivo `db.json` no GitHub Pages.  
-⚠️ Isso é **somente leitura** (não dá para fazer `POST/PUT/DELETE` num arquivo estático). Para produção, substitua o `baseUrl` por uma API hospedada.
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- Axios
+- json-server
 
 ---
 
-## 📁 Link do Figma
+## 📚 Contexto educacional
 
-Você pode acessar o Figma do projeto aqui:
-https://www.figma.com/design/Sz1gmmemxqcB3amInL4Ndp/Rebrand-Memoteca-%7C-Curso-CRUD?node-id=148-26&t=FpdmfbiM1i1s6REQ-0
+Projeto desenvolvido durante estudos na **Alura**, com foco em:
+- Evolução de código legado
+- Arquitetura Front-end
+- Boas práticas de JavaScript moderno
+- Preparação para frameworks (React / Vue)
+
+---
+
+## 📄 Licença
+
+Projeto fictício, sem fins comerciais, para fins educacionais.
