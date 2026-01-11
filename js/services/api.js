@@ -47,9 +47,16 @@ export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
     }
 
     return {
-        index()
+        async index()
         {
-            return request('/thoughts');
+            try
+            {
+                const { data } = await axiosInstance.get('/thoughts');
+                return data;
+            } catch (error)
+            {
+                throw normalizeError(error);
+            }
         },
         async show(id)
         {
