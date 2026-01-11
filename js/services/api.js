@@ -36,6 +36,16 @@ export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
         return error instanceof Error ? error : new Error(String(error));
     }
 
+    function normalizeDate(date)
+    {
+        if (!date) throw new Error("Data é obrigatória");
+
+        const parsedDate = new Date(date);
+        if (isNaN(parsedDate.getTime())) throw new Error("Data inválida");
+
+        return parsedDate.toISOString();
+    }
+
     return {
         async index()
         {
@@ -59,25 +69,15 @@ export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
                 throw normalizeError(error);
             }
         },
-        async store({ content, author })
+        async store({ content, author, date })
         {
             try
             {
-                const { data } = await axiosInstance.post('/thoughts', { content, author });
-                return data;
-            } catch (error)
-            {
-                throw normalizeError(error);
-            }
-        },
-        async update({ id, content, author })
-        {
-            try
-            {
-                const { data } = await axiosInstance.put(`/thoughts/${id}`, {
-                    id,
+                const { data } = await axiosInstance.post('/thoughts', {
                     content,
                     author,
+                    date: normalizeDate(date),
+                    favorite: false,
                 });
                 return data;
             } catch (error)
@@ -85,7 +85,22 @@ export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
                 throw normalizeError(error);
             }
         },
-
+        async update({ id, content, author, date })
+        {
+            try
+            {
+                const { data } = await axiosInstance.put(`/thoughts/${id}`, {
+                    id,
+                    content,
+                    author,
+                    date: normalizeDate(date),
+                });
+                return data;
+            } catch (error)
+            {
+                throw normalizeError(error);
+            }
+        },
         async delete(id)
         {
             try
@@ -97,5 +112,25 @@ export function createApi({ baseUrl = DEFAULT_BASE_URL } = {})
                 throw normalizeError(error);
             }
         },
+        async toggleFavorite({ id, favorite })
+        {
+            try
+            {
+                const { data } = axiosInstance.patch(`/thoughts/${id}`, {
+                    favorite
+                });
+                return data;
+            } catch (error)
+            {
+                throw normalizeError(error);
+            }
+        },
+        async search(t)
+        {
+            const thoughts = await this.index();
+            const term = t.toLowerCase();
+
+            return thoughts.filter(thought => thought.content.toLowerCase().includes(term) || thought.author.toLowerCase().includes(term));
+        }
     };
 }

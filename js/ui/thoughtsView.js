@@ -1,6 +1,7 @@
-export function createThoughtsView({ listEl, onEdit, onDelete, assetsBase = './assets/images' } = {})
+export function createThoughtsView({ listEl, onEdit, onDelete, onFavorite, assetsBase = './assets/images' } = {})
 {
     if (!listEl) throw new Error("listEl é obrigatório");
+    const emptyMessageEl = document.getElementById("mensagem-vazia");
 
     // Event delegation: 1 listener no UL
     listEl.addEventListener('click', (event) =>
@@ -16,6 +17,7 @@ export function createThoughtsView({ listEl, onEdit, onDelete, assetsBase = './a
 
         if (action === 'edit') onEdit?.(id);
         if (action === 'delete') onDelete?.(id);
+        if (action === 'favorite') onFavorite?.(id);
     });
 
     function renderItem(thought)
@@ -52,8 +54,38 @@ export function createThoughtsView({ listEl, onEdit, onDelete, assetsBase = './a
         btnDelete.dataset.action = "delete";
         btnDelete.innerHTML = `<img src="${assetsBase}/icone-excluir.png" alt="Excluir" />`;
 
-        icons.append(btnEdit, btnDelete);
-        li.append(icon, content, author, icons);
+        const btnFavorite = document.createElement('button');
+        btnFavorite.className = "botao-favorito";
+        btnFavorite.dataset.action = 'favorite';
+        btnFavorite.innerHTML = `<img src="${assetsBase}/${thought.favorite ? 'icone-favorito.png' : 'icone-favorito_outline.png'}" alt="Favoritar" />`;
+
+        const date = document.createElement('div');
+        date.className = "pensamento-data";
+        if (thought.date)
+        {
+            const dateObj = new Date(thought.date);
+            if (!isNaN(dateObj.getTime()))
+            {
+                const formattedDate = dateObj.toLocaleDateString('pt-BR', {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                });
+                date.textContent = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+            }
+            else 
+            {
+                date.textContent = 'Data inválida';
+            }
+        }
+        else
+        {
+            date.textContent = 'Sem data';
+        }
+
+        icons.append(btnFavorite, btnEdit, btnDelete);
+        li.append(icon, content, author, date, icons);
 
         return li;
     }
@@ -61,6 +93,11 @@ export function createThoughtsView({ listEl, onEdit, onDelete, assetsBase = './a
     function render(thoughts = [])
     {
         listEl.innerHTML = "";
+        if (emptyMessageEl)
+        {
+            emptyMessageEl.style.display = thoughts.length === 0 ? 'block' : 'none';
+        }
+
         thoughts.forEach(thought => listEl.appendChild(renderItem(thought)));
     }
 
