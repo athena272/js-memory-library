@@ -3,12 +3,14 @@
     {
       "id": "2a56",
       "content": "Vc faz TI? Conserta meu celular!",
-      "author": "Grupo da família"
+      "author": "Grupo da família",
+      "favorite": true
     },
     {
       "id": "4c7d",
       "content": "Da vida reclama, mas sem ela não vive!",
-      "author": "Mestre Yoda"
+      "author": "Mestre Yoda",
+      "favorite": true
     },
     {
       "id": "5b8a",
@@ -64,6 +66,13 @@
       "id": "4d2e",
       "content": "Se eu for aí e achar, eu esfrego na sua cara!",
       "author": "Mãe"
+    },
+    {
+      "id": "4074",
+      "content": "Café com código",
+      "author": "Nietzsche",
+      "date": "2026-01-09T00:00:00.000Z",
+      "favorite": false
     }
   ]
 }
